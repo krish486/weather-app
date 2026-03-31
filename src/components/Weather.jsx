@@ -24,7 +24,7 @@ const Weather = ({ weather, city, loading }) => {
                     <div className="flex gap-4 md:gap-6 items-end flex-wrap">
 
                         <h1 className="text-6xl sm:text-7xl md:text-9xl font-bold text-black">
-                            {weather ? `${weather.temperature_2m}°` : '--'}
+                            {weather ? `${weather.temperature_2m}°` : loading ? "..." : "--"}
                         </h1>
 
                         <div className="flex flex-col">
@@ -44,21 +44,21 @@ const Weather = ({ weather, city, loading }) => {
                     <div className="flex justify-between gap-4">
                         <p>Wind</p>
                         <h4 className="font-semibold">
-                            {weather ? `${weather.wind_speed_10m} km/h` : '--'}
+                            {weather ? `${weather.wind_speed_10m} km/h` : loading ? "..." : "--"}
                         </h4>
                     </div>
 
                     <div className="flex justify-between gap-4">
                         <p>Humidity</p>
                         <h4 className="font-semibold">
-                            {weather ? `${weather.relative_humidity_2m}%` : '--'}
+                            {weather ? `${weather.relative_humidity_2m}%` : loading ? "..." : "--"}
                         </h4>
                     </div>
 
                     <div className="flex justify-between gap-4">
                         <p>Rain</p>
                         <h4 className="font-semibold">
-                            {weather ? `${weather.rain}%` : '--'}
+                            {weather ? `${weather.rain}%` : loading ? "..." : "--"}
                         </h4>
                     </div>
 

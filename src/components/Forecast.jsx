@@ -7,6 +7,9 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
 
+
+
+
 const Forecast = ({ cordinate }) => {
     const [data7, setData7] = useState(null);
     const [dataJSON, setDataJSON] = useState([])
@@ -14,22 +17,37 @@ const Forecast = ({ cordinate }) => {
 
 
     let getSevenDayForecast = async () => {
-        setLoading(true)
-        let res = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${cordinate.latitude}&longitude=${cordinate.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,rain_sum,wind_speed_10m_max,wind_gusts_10m_max&timezone=GMT`)
-        console.log(res.data.daily)
-        let arr1 = res.data.daily
-        setData7(arr1);
-        let arr2 = arr1.time.map((date, idx) => {
-            return ({
-                day: new Date(date).toLocaleDateString("en-US", { weekday: "short" }),
+        try {
+            setLoading(true)
+
+            let res = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${cordinate.latitude}&longitude=${cordinate.longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code,rain_sum,wind_speed_10m_max,wind_gusts_10m_max&timezone=GMT`)
+
+            let arr1 = res.data.daily
+
+            if (!arr1 || !arr1.time) {
+                alert("⚠️ Forecast data unavailable")
+                setLoading(false)
+                return
+            }
+
+            let arr2 = arr1.time.map((date, idx) => ({
+                day: idx === 0
+                    ? "Today"
+                    : new Date(date).toLocaleDateString("en-US", { weekday: "short" }),
                 temp: arr1.temperature_2m_max[idx],
                 min: arr1.temperature_2m_min[idx],
-                icon: getIcon(getWeatherType(arr1.weather_code[idx])),
+                icon: getWeatherType(arr1.weather_code[idx]), // FIXED
                 rain: `${arr1.rain_sum[idx]} mm`
-            })
-        })
-        setDataJSON(arr2)
-        setLoading(false)
+            }))
+
+            setDataJSON(arr2)
+
+        } catch (err) {
+            console.log(err)
+            alert("⚠️ Failed to load forecast")
+        } finally {
+            setLoading(false)
+        }
     }
 
 

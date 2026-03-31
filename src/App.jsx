@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 
 const App = () => {
 
+  const [searchCity, setSearchCity] = useState(null)
   let [city, setCity] = useState("")
 
   let [cordinate, setCordinate] = useState(null)
@@ -18,23 +19,52 @@ const App = () => {
 
 
   let getCord = async (city) => {
-    let res = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=10&language=en&format=json`)
-    setCordinate({ longitude: res.data.results[0].longitude, latitude: res.data.results[0].latitude })
+    try {
+      let res = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=10&language=en&format=json`)
+
+      if (!res.data.results || res.data.results.length === 0) {
+        alert("❌ City not found. Please enter a valid city.")
+        setLoading(false)
+        return
+      }
+
+      setCordinate({
+        longitude: res.data.results[0].longitude,
+        latitude: res.data.results[0].latitude
+      })
+      setSearchCity(res.data.results[0].name)
+
+    } catch (err) {
+      console.log(err)
+      alert("⚠️ Something went wrong while fetching location")
+      setLoading(false)
+    }
   }
 
   let getweather = async ({ longitude, latitude }) => {
-    let res = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=wind_speed_10m,rain,temperature_2m,weather_code,relative_humidity_2m`)
+    try {
+      let res = await axios.get(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=wind_speed_10m,rain,temperature_2m,weather_code,relative_humidity_2m`
+      )
 
-    
+      setWeather(res.data.current)
 
-    setWeather(res.data.current)
-    
-    setLoading(false)
+    } catch (err) {
+      console.log(err)
+      alert("⚠️ Failed to fetch weather data")
+    } finally {
+      setLoading(false)
+    }
   }
 
   let handleCitySearch = () => {
-    setLoading(true);
-    getCord(city);
+    if (!city.trim()) {
+      alert("⚠️ Please enter a city name")
+      return
+    }
+
+    setLoading(true)
+    getCord(city)
   }
 
   useEffect(() => {
@@ -47,7 +77,7 @@ const App = () => {
   return (
     <div className='h-screen w-screen flex flex-col items-center justify-start gap-8 '>
       <Navbar handleCitySearch={handleCitySearch} setCity={setCity} city={city} />
-      <Weather weather={weather} city={city} loading={loading} />
+      <Weather weather={weather} city={searchCity} loading={loading} />
       <Forecast cordinate={cordinate} />
     </div>
   )
