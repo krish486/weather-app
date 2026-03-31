@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+
+body {
+  background: linear-gradient( to right, #2D7EFF, #AC48FF ) ;
+}
+
+*{
+  scrollbar-width: none;
+}
