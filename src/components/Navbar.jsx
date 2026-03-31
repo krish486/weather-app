@@ -15,7 +15,7 @@ const Navbar = ({ handleCitySearch, city, setCity }) => {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
 
                     <input
-                        onChange={e => setCity(e.target.value)}
+                        onChange={e => setCity(e.target.value.trim())}
                         value={city || ''}
                         type="text"
                         placeholder="Search for the city..."
